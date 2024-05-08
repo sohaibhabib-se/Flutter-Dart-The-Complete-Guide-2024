@@ -45,7 +45,7 @@ class ExpenseBucket {
   });
 
   //Alternative to default constructor.
-  ExpenseBucket.forCategory(List<Expense> allExpenses, );
+  ExpenseBucket.forCategory(List<Expense> allExpenses, this.category) : expenses = allExpenses.where((expense) => expense.category == category).toList();
 
   final Category category;
   final List<Expense> expenses;
