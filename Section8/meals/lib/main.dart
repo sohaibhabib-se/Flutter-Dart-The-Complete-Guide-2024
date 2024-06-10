@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:meals/screens/categories.dart';
 import 'dart:io';
 
+import 'package:meals/screens/tabs.dart';
+
 class MyHttpOverrides extends HttpOverrides{
   @override
   HttpClient createHttpClient(SecurityContext? context){
@@ -33,7 +35,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         theme: theme,
-        home: const CatgoriesScreen(),
+        home: const TabsScreen(),//const CatgoriesScreen(),
     );
   }
 }
