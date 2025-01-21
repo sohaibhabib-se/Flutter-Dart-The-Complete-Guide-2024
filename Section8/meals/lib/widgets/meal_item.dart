@@ -57,7 +57,7 @@ class MealItem extends StatelessWidget {
                       maxLines: 2,
                       textAlign: TextAlign.center,
                       softWrap: true,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis, // Very long text would be cut off by using three dots....
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
