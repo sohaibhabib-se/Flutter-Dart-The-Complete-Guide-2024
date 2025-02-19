@@ -19,16 +19,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<GroceryItem> _groceryItems = [];
-  var _isLoading = true;
+  // var _isLoading = true;
+  late Future<List<GroceryItem>> _loadedItems;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    _loadItems();
+    _loadedItems = _loadItems();
   }
 
-  void _loadItems() async {
+  Future<List<GroceryItem>> _loadItems() async {
     final url = Uri.https('flutter-prep-a48de-default-rtdb.firebaseio.com',
         'shopping-list.json');
 
@@ -36,24 +37,23 @@ class _HomeScreenState extends State<HomeScreen> {
     // print(response.statusCode);
     // print(response.body);
 
-    try {
+    // try {
       final response = await http.get(url);
       if (response.statusCode >= 400) {
-        setState(() {
-          _error = 'Failed to fetch data please try it again later.';
-        });
+        // setState(() {
+        //   _error = 'Failed to fetch data please try it again later.';
+        // });
+        throw Exception('Failed to fetch data please try it again later.');
       }
 
       if(response.body == 'null'){
-        setState(() {
-          _isLoading = false;
-        });
-        return;
+        // setState(() {
+        //   _isLoading = false;
+        // });
+        return [];
       }
 
-      final Map<String, dynamic> listData =
-      json.decode(response.body);
-      // print(respon)
+      final Map<String, dynamic> listData = json.decode(response.body);
       final List<GroceryItem> loadedItems = [];
       for (final item in listData.entries) {
         final category = categories.entries
@@ -68,16 +68,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       }
-      setState(() {
-        _groceryItems = loadedItems;
-        _isLoading = false;
-      });
-    }
-    catch(error) {
-      setState(() {
-        _error = 'Something went wrong!!! ${error.toString()}';
-      });
-    }
+      // setState(() {
+      //   _groceryItems = loadedItems;
+      //   _isLoading = false;
+      // });
+      return loadedItems;
+    // }
+    // catch(error) {
+    //   setState(() {
+    //     _error = 'Something went wrong!!! ${error.toString()}';
+    //   });
+    // }
   }
 
   void _addItem() async {
@@ -122,34 +123,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = const Center(
-      child: Text(
-        'Please add new items using + button.',
-      ),
-    );
+    // Widget content = const Center(
+    //   child: Text(
+    //     'Please add new items using + button.',
+    //   ),
+    // );
 
-    if(_isLoading == true){
-      content = const Center(child: CircularProgressIndicator(),);
-    }
+    // if(_isLoading == true){
+    //   content = const Center(child: CircularProgressIndicator(),);
+    // }
 
-    if (_groceryItems.isNotEmpty) {
-      content = ListView.builder(
-        itemCount: _groceryItems.length,
-        itemBuilder: (ctx, index) => Dismissible(
-          onDismissed: (direction) {
-            _removeItem(_groceryItems[index]);
-          },
-          key: ValueKey(_groceryItems[index].id),
-          child: GroceryListItem(
-            groceryItem: _groceryItems[index],
-          ),
-        ),
-      );
-    }
+    // if (_groceryItems.isNotEmpty) {
+    //   content = ListView.builder(
+    //     itemCount: _groceryItems.length,
+    //     itemBuilder: (ctx, index) => Dismissible(
+    //       onDismissed: (direction) {
+    //         _removeItem(_groceryItems[index]);
+    //       },
+    //       key: ValueKey(_groceryItems[index].id),
+    //       child: GroceryListItem(
+    //         groceryItem: _groceryItems[index],
+    //       ),
+    //     ),
+    //   );
+    // }
 
-    if(_error != null ){
-      content = Center(child: Text(_error!),);
-    }
+    // if(_error != null ){
+    //   content = Center(child: Text(_error!),);
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -161,7 +162,44 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: content,
+      body: FutureBuilder(future: _loadedItems, builder: (context, snapshot) {
+
+        if(snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator(),);
+        }
+
+        if(snapshot.hasError) {
+          return Center(child: Text(snapshot.error.toString(),),);
+        }
+
+        if(snapshot.data!.isEmpty) {
+          return const Center(
+            child: Text(
+              'Please add new items using + button.',
+            ),
+          );
+        }
+
+        return ListView.builder(
+          itemCount: snapshot.data!.length,//_groceryItems.length,
+          itemBuilder: (ctx, index) => Dismissible(
+            onDismissed: (direction) {
+              _removeItem(snapshot.data![index]);
+            },
+            key: ValueKey(snapshot.data![index].id),
+            child: GroceryListItem(
+              groceryItem: snapshot.data![index],
+            ),
+          ),
+        );
+
+      },),
     );
   }
 }
+
+/*
+setState(() {
+          _error = 'Failed to fetch data please try it again later.';
+        });
+* */
