@@ -29,33 +29,42 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text(widget.isSelecting ? 'Pick your Location' : 'Your Location'),
-        actions: [
-          if (widget.isSelecting)
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).pop(_pickedLocation);
-              },
-              icon: const Icon(Icons.save),
-            )
-        ],
-      ),
+          title:
+          Text(widget.isSelecting ? 'Pick your Location' : 'Your Location'),
+          actions: [
+            if (widget.isSelecting)
+              IconButton(
+                icon: const Icon(Icons.save),
+                onPressed: () {
+                  Navigator.of(context).pop(_pickedLocation);
+                },
+              ),
+          ]),
       body: GoogleMap(
-        onTap: !widget.isSelecting ? null : (position) {
+        onTap: !widget.isSelecting
+            ? null
+            : (position) {
           setState(() {
             _pickedLocation = position;
           });
         },
         initialCameraPosition: CameraPosition(
-          target: LatLng(widget.location.latitude, widget.location.longitude),
+          target: LatLng(
+            widget.location.latitude,
+            widget.location.longitude,
+          ),
           zoom: 16,
         ),
-        markers: (_pickedLocation == null && widget.isSelecting) ? {} : {
+        markers: (_pickedLocation == null && widget.isSelecting)
+            ? {}
+            : {
           Marker(
             markerId: const MarkerId('m1'),
-            position: _pickedLocation ?? //_pickedLocation != null ? _pickedLocation! :
-                LatLng(widget.location.latitude, widget.location.longitude),
+            position: _pickedLocation ??
+                LatLng(
+                  widget.location.latitude,
+                  widget.location.longitude,
+                ),
           ),
         },
       ),

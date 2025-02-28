@@ -18,7 +18,6 @@ class AddPLaceScreen extends ConsumerStatefulWidget {
 
 class _AddPlaceScreenState extends ConsumerState<AddPLaceScreen> {
   final _titleController = TextEditingController();
-
   File? _selectedImage;
   PlaceLocation? _selectedLocation;
 

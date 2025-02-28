@@ -24,5 +24,5 @@ class Place {
   final String id;
   final String title;
   final File image;
-final PlaceLocation location;
+  final PlaceLocation location;
 }

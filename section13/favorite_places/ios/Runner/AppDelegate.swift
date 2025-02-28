@@ -1,14 +1,14 @@
-import UIKit
 import Flutter
+import UIKit
 import GoogleMaps
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GMSServices.provideAPIKey("AIzaSyDLcwxUggpPZo8lcbH0TB4Crq5SJjtj4ag")
+      GMSServices.provideAPIKey("AIzaSyDenq46oRV8SoEEzl2wFfyP0er7z0ChHYA")
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

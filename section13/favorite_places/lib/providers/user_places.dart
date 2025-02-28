@@ -17,6 +17,7 @@ Future<Database> _getDatabase() async {
     },
     version: 1,
   );
+  print("DB created");
   return db;
 }
 
@@ -25,33 +26,34 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
 
   Future<void> loadPlaces() async {
     final db = await _getDatabase();
-
     final data = await db.query('user_places');
-    final places = data.map(
-      (row) => Place(
+    final places = data
+        .map(
+          (row) => Place(
         id: row['id'] as String,
         title: row['title'] as String,
         image: File(row['image'] as String),
         location: PlaceLocation(
-            latitude: row['lat'] as double,
-            longitude: row['lng'] as double,
-            address: row['address'] as String),
+          latitude: row['lat'] as double,
+          longitude: row['lng'] as double,
+          address: row['address'] as String,
+        ),
       ),
-    ).toList();
+    )
+        .toList();
 
     state = places;
-    print('Hello loaded..');
   }
 
   void addPlace(String title, File image, PlaceLocation location) async {
-    final appDirectory = await syspaths.getApplicationDocumentsDirectory();
-    final fileName = path.basename(image.path);
-    final copiedImage = await image.copy('$appDirectory/$fileName');
+    final appDir = await syspaths.getApplicationDocumentsDirectory();
+    final filename = path.basename(image.path);
+    final copiedImage = await image.copy('${appDir.path}/$filename');
 
-    final newPlace = Place(title: title, image: copiedImage, location: location);
+    final newPlace =
+    Place(title: title, image: copiedImage, location: location);
 
     final db = await _getDatabase();
-
     db.insert('user_places', {
       'id': newPlace.id,
       'title': newPlace.title,
@@ -62,11 +64,10 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
     });
 
     state = [newPlace, ...state];
-    print('Hello Saved..');
   }
 }
 
 final userPlacesProvider =
-    StateNotifierProvider<UserPlacesNotifier, List<Place>>(
-  (ref) => UserPlacesNotifier(),
+StateNotifierProvider<UserPlacesNotifier, List<Place>>(
+      (ref) => UserPlacesNotifier(),
 );
